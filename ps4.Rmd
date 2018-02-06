@@ -1,0 +1,167 @@
+---
+title: "ps4"
+author: "Gustavo Gil"
+date: "2/2/2018"
+output: html_document
+---
+
+CHAPTER 2
+
+
+```{r}
+library(tidyverse)
+diamonds
+```
+
+1. Carat is the most important variable in prdictig the price of
+diamonds. Carat and cut have a positive correlation in some cases and negative in other.
+
+```{r}
+regdiamond <- lm(price ~ carat + cut + color + clarity
+               + depth + table, data = diamonds)
+summary(regdiamond)
+```
+
+```{r}
+regcarat.cut <- lm(carat ~ cut, data = diamonds)
+summary(regcarat.cut)
+```
+
+2.
+
+```{r} 
+ggplot(data = diamonds) + 
+  geom_count(mapping = aes(x = cut, y = color))
+```
+
+```{r} 
+ggplot(data = diamonds) + 
+  geom_count(mapping = aes(x = color, y = cut))
+```
+
+
+3. I think that it is easier to read the table when we use 
+aes(x = color, y = cut). When we read a graph like this, we
+start from left to right, and having the name of the cut instead 
+of only the letter that represents the color, makes it more
+intuitive for the user to read the data.
+
+```{r}
+ggplot(data = diamonds, 
+  mapping = aes(x = price, color = cut_width(carat, 1))) + geom_freqpoly()
+```
+
+```{r}
+ggplot(data = diamonds, 
+  mapping = aes(x = price, color = cut_number(carat, 5))) + geom_freqpoly()
+```
+
+4. In cut_width I need to consider the need to make specific analysis
+about different segments of the data; on cut_number, I want to know 
+what are the most important groups by their number based on the 
+recommendation of the software. The first will only be useful if the
+groupings have enough observations; thr second will be useful by software
+design, but might not be if we want to analyze an specific aspect of
+the data without enough observations.
+
+6.The distribution of large diamonds is much more dispersed than small
+ones. I believe the reason is that the market of small diamonds must
+be indifferent about particular characteristics of the diamond; buyers
+are primarily interested in the low cost. Instead, the most the buyers
+are willing to pay for diamonds, they will not only be interested
+in the carat, but also in the cut, the color, the brand, etcetera.
+
+```{r}
+ggplot(data = diamonds, aes(cut_number(price,10), y = carat)) + geom_boxplot()
+```
+
+
+7. 
+
+```{r}
+ggplot(diamonds) + geom_point(aes(x = carat, y = price, color = cut))
+```
+
+```{r}
+ggplot(diamonds) + geom_tile(aes(x = cut, y = carat, fill = price))
+```
+
+8. In bins, the graph is much more visible where a high number of
+observations overlap. While in a scatterplot, individual observations
+are evident just by taking a look at the graph.
+
+```{r}
+ggplot(data = diamonds) +
+geom_point(mapping = aes(x = x, y = y)) + coord_cartesian(xlim = c(4, 11), ylim = c(4, 11))
+```
+
+
+CHAPTER 10
+
+1. We can know that an object is a tibble because its lists (the columns)
+are of the same lenght.
+
+```{r}
+mtcars
+```
+
+2. Unlike the data frame from the code chunk that gives the observation
+of the column "xyz", when calling for printing the "column" x in tibble, results in the  following message "Unknown or uninitialised column: 'x'.NULL". 
+
+```{r}
+d_f <- data.frame(abc = 1, xyz = "a")
+```
+
+```{r}
+d_f$x
+```
+
+```{r}
+d_f[, "xyz"]
+```
+```{r}
+d_f[, c("abc", "xyz")]
+```
+
+```{r}
+d.f <- tibble (
+abc = 1,
+xyz = "a"
+)
+```
+
+```{r}
+d.f$x
+```
+```{r}
+d.f[, "xyz"]
+```
+```{r}
+d.f[, c("abc", "xyz")]
+```
+
+3. We can extract the reference variable by using the column number in which
+it is located. If its location is the first column, then we can use
+names(x)[1]
+
+4. We can convert simple named vectors into tibbles with enframe().
+See (https://tjmahr.github.io/tibble-package-tour/=). I migh use it when I want to transfor a particular result from some caculation on a tibble into another tibble.
+
+5. options(tibble.print_max = n, tibble.print_min = m) is the control option for the additional names of columns that are printed, tibble.print_max = n which defines the maximum amount of column names we want to see.
+
+CHAPTER 11
+
+1. I would use read.cvs(data, sep = "|")
+
+2. The most important arguments are the path to the file (file); the column positions (col_positions); specify the type of the column (col_types); the locale default in case the data will be used in a country outside the US; specify the missing values in case of existence. There are other arguments that have to be used in case of special conditions of the data frame imported.
+
+3. In order to read "x,y\n1,'a,b'" in a data frame, we would need to specify the following arguments: the file path; "," as the delim argument; "'"" as the single character that quotes the string; escape_backlash = TRUE.
+
+4. read_csv("a,b,c\n1,2,3\n4,5,6")
+read_csv("a,b,c\n1,2,1\n2,3,4")
+read_csv("a,b\n1,.", na = ".")
+read_csv("a,b\n1,2\.,.", na = ".")
+read_csv("a,b\n1,3")
+
+5. date_format and time_format are the default arrangement formats for a country.
+
